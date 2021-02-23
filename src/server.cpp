@@ -727,9 +727,14 @@ void CServer::OnHandledSignal ( int sigNum )
 #else
     switch ( sigNum )
     {
-    case SIGUSR1:
-        RequestNewRecording();
+    case SIGUSR1: {
+        bool enable = !GetServerListEnabled();
+        SetServerListEnabled ( enable );
+        if (!enable)
+            UnregisterSlaveServer();
+        UpdateServerList();
         break;
+    }
 
     case SIGUSR2:
         SetEnableRecording ( !JamController.GetRecordingEnabled() );
