@@ -453,7 +453,8 @@ HEADERS_OPUS_ARM = libs/opus/celt/arm/armcpu.h \
 HEADERS_OPUS_X86 = libs/opus/celt/x86/celt_lpc_sse.h \
     libs/opus/celt/x86/pitch_sse.h \
     libs/opus/celt/x86/vq_sse.h \
-    libs/opus/celt/x86/x86cpu.h
+    libs/opus/celt/x86/x86cpu.h \
+    $$files(libs/opus/silk/x86/*.h)
 
 SOURCES += src/buffer.cpp \
     src/channel.cpp \
@@ -622,26 +623,36 @@ SOURCES_OPUS_X86 = libs/opus/celt/x86/celt_lpc_sse4_1.c \
     libs/opus/celt/x86/pitch_sse4_1.c \
     libs/opus/celt/x86/vq_sse2.c \
     libs/opus/celt/x86/x86_celt_map.c \
-    libs/opus/celt/x86/x86cpu.c
+    libs/opus/celt/x86/x86cpu.c \
+    $$files(libs/opus/silk/x86/*.c)
 
 android {
     contains(ANDROID_ARCHITECTURE, arm) | contains(ANDROID_ARCHITECTURE, arm64) {
         HEADERS_OPUS += $$HEADERS_OPUS_ARM
-        SOURCE_OPUS += $$SOURCES_OPUS_ARM
+        SOURCES_OPUS += $$SOURCES_OPUS_ARM
     } else:contains(ANDROID_ARCHITECTURE, x86) | contains(ANDROID_ARCHITECTURE, x86_64) {
         HEADERS_OPUS += $$HEADERS_OPUS_X86
-        SOURCE_OPUS += $$SOURCES_OPUS_X86
+        SOURCES_OPUS += $$SOURCES_OPUS_X86
     }
 } else:win32 | unix | macx {
     contains(QT_ARCH, arm) | contains(QT_ARCH, arm64) {
         HEADERS_OPUS += $$HEADERS_OPUS_ARM
-        SOURCE_OPUS += $$SOURCES_OPUS_ARM
+        SOURCES_OPUS += $$SOURCES_OPUS_ARM
     } else:contains(QT_ARCH, x86) | contains(QT_ARCH, x86_64) {
         HEADERS_OPUS += $$HEADERS_OPUS_X86
-        SOURCE_OPUS += $$SOURCES_OPUS_X86
+        SOURCES_OPUS += $$SOURCES_OPUS_X86
+
+        # OPUS will choose the code to use at runtime, but we need to
+        # support all possibilities at compile time.  For windows,
+        # libs/opus/win32/config.h says no compiler flags are needed.
+        !msvc:CFLAGS_OPUS += -msse -msse2 -msse4.1 -mavx
     }
-    win32 {
+    msvc {
         HEADERS_OPUS += libs/opus/win32/config.h
+        INCLUDEPATH_OPUS += libs/opus/win32
+    } else:exists(libs/opus/config.h) {
+        HEADERS_OPUS += libs/opus/config.h
+        INCLUDEPATH_OPUS += libs/opus
     }
 }
 
@@ -1025,10 +1036,17 @@ contains(CONFIG, "opus_shared_lib") {
         DEFINES += USE_OPUS_SHARED_LIB
     }
 } else {
+    contains(HEADERS_OPUS, ".*/config.h") {
+        DEFINES += HAVE_CONFIG_H
+        DEFINES -= OPUS_BUILD
+    } else {
+        message("Missing opus config.h file, try running configure?")
+    }
     INCLUDEPATH += $$INCLUDEPATH_OPUS
     HEADERS += $$HEADERS_OPUS
     SOURCES += $$SOURCES_OPUS
     DISTFILES += $$DISTFILES_OPUS
+    QMAKE_CFLAGS += $$CFLAGS_OPUS
 }
 
 # disable version check if requested
