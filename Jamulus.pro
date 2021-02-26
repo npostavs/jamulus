@@ -56,6 +56,9 @@ INCLUDEPATH_OPUS = libs/opus/include \
     libs/opus/silk/float \
     libs/opus/silk/fixed
 
+INCLUDEPATH_OPUS_X86 = libs/opus/celt/x86/ \
+    libs/opus/silk/x86/
+
 DEFINES += APP_VERSION=\\\"$$VERSION\\\" \
     OPUS_BUILD \
     USE_ALLOCA \
@@ -686,6 +689,7 @@ android {
     } else:contains(QT_ARCH, x86) | contains(QT_ARCH, x86_64) {
         HEADERS_OPUS += $$HEADERS_OPUS_X86
         SOURCES_OPUS_ARCH += $$SOURCES_OPUS_X86_SSE $$SOURCES_OPUS_X86_SSE2 $$SOURCES_OPUS_X86_SSE4
+        INCLUDEPATH_OPUS += $$INCLUDEPATH_OPUS_X86
     }
     msvc {
         SOURCES_OPUS += $$SOURCES_OPUS_ARCH
