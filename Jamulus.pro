@@ -1047,6 +1047,13 @@ contains(CONFIG, "opus_shared_lib") {
     SOURCES += $$SOURCES_OPUS
     DISTFILES += $$DISTFILES_OPUS
     QMAKE_CFLAGS += $$CFLAGS_OPUS
+
+    QMAKE_CFLAGS_RELEASE -= -O2
+    QMAKE_CFLAGS_RELEASE += -O0 -g3
+    QMAKE_CXXFLAGS_RELEASE -= -O2
+    QMAKE_CXXFLAGS_RELEASE += -O0 -g3
+    QMAKE_CFLAGS_DEBUG += -O0 -g3
+    QMAKE_CXXFLAGS_DEBUG += -O0 -g3
 }
 
 # disable version check if requested
