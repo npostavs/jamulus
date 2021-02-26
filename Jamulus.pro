@@ -54,10 +54,8 @@ INCLUDEPATH_OPUS = libs/opus/include \
     libs/opus/celt \
     libs/opus/silk \
     libs/opus/silk/float \
-    libs/opus/silk/fixed
-
-INCLUDEPATH_OPUS_X86 = libs/opus/celt/x86/ \
-    libs/opus/silk/x86/
+    libs/opus/silk/fixed \
+    libs/opus
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\" \
     OPUS_BUILD \
