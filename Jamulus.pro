@@ -58,8 +58,6 @@ INCLUDEPATH_OPUS = libs/opus/include \
     libs/opus
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\" \
-    OPUS_BUILD \
-    USE_ALLOCA \
     CUSTOM_MODES \
     _REENTRANT
 
@@ -687,17 +685,13 @@ android {
     } else:contains(QT_ARCH, x86) | contains(QT_ARCH, x86_64) {
         HEADERS_OPUS += $$HEADERS_OPUS_X86
         SOURCES_OPUS_ARCH += $$SOURCES_OPUS_X86_SSE $$SOURCES_OPUS_X86_SSE2 $$SOURCES_OPUS_X86_SSE4
-        INCLUDEPATH_OPUS += $$INCLUDEPATH_OPUS_X86
-    }
-    msvc {
-        SOURCES_OPUS += $$SOURCES_OPUS_ARCH
-        HEADERS_OPUS += libs/opus/win32/config.h
-        INCLUDEPATH_OPUS += libs/opus/win32
-    } else:exists(libs/opus/config.h) {
-        HEADERS_OPUS += libs/opus/config.h
-        INCLUDEPATH_OPUS += libs/opus
+        DEFINES_OPUS += OPUS_X86_MAY_HAVE_SSE OPUS_X86_MAY_HAVE_SSE2 OPUS_X86_MAY_HAVE_SSE4_1
+        # x86_64 implies SSE2
+        contains(QT_ARCH, x86_64):DEFINES_OPUS += OPUS_X86_PRESUME_SSE=1 OPUS_X86_PRESUME_SSE2=1
+        DEFINES_OPUS += CPU_INFO_BY_C
     }
 }
+DEFINES_OPUS += OPUS_BUILD=1 USE_ALLOCA=1
 
 DISTFILES += ChangeLog \
     COPYING \
@@ -1079,12 +1073,7 @@ contains(CONFIG, "opus_shared_lib") {
         DEFINES += USE_OPUS_SHARED_LIB
     }
 } else {
-    contains(HEADERS_OPUS, ".*/config.h") {
-        DEFINES += HAVE_CONFIG_H
-        DEFINES -= OPUS_BUILD
-    } else {
-        message("Missing opus config.h file, try running configure?")
-    }
+    DEFINES += $$DEFINES_OPUS
     INCLUDEPATH += $$INCLUDEPATH_OPUS
     HEADERS += $$HEADERS_OPUS
     SOURCES += $$SOURCES_OPUS
