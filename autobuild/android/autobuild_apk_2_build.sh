@@ -28,7 +28,7 @@ export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
 export STRIP=$TOOLCHAIN/bin/llvm-strip
 
 echo "STARTING: ./configure --host=$TARGET"
-if ./configure --host=$TARGET ; then
+if ! ./configure --host=$TARGET ; then
     echo "FAILED CONFIGURE $TARGET, config.log:"
     echo .
     echo .
@@ -59,7 +59,7 @@ export STRIP=$TOOLCHAIN/bin/llvm-strip
 
 echo "STARTING: ./configure --host=$TARGET"
 
-if ./configure --host=$TARGET ; then
+if ! ./configure --host=$TARGET ; then
     echo "FAILED CONFIGURE $TARGET, config.log:"
     echo .
     echo .
