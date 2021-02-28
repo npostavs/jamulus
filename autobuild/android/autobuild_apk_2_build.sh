@@ -16,27 +16,30 @@ source $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/../ensure_THIS_JAMULUS_PROJ
 cd "${THIS_JAMULUS_PROJECT_PATH}"
 
 cd libs/opus/
+export PATH=/opt/android/android-ndk/bin/:$PATH
+export CC=arm-linux-androideabi-clang
+export CXX=arm-linux-androideabi-clang++
 clang=/opt/android/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
-./configure --build=x86_64-linux --host=armv7a-linux-anrdoideabi21 CC=$clang CFLAGS='-target armv7a-linux-androideabi21' || cat config.log
+./configure --host=arm-linux-anrdoideabi CC=$clang || cat config.log
 echo .
 echo .
 echo .
 echo .
 cat config.h
-echo .
-echo .
-echo .
-echo .
-./configure --build=x86_64-linux --host=aarch64-linux-anrdoideabi21 CC=$clang CFLAGS='-target aarch64-linux-android21' || cat config.log
-echo .
-echo .
-echo .
-echo .
-cat config.h
-echo .
-echo .
-echo .
-echo .
+# echo .
+# echo .
+# echo .
+# echo .
+# ./configure --build=x86_64-linux --host=aarch64-linux-anrdoideabi21 CC=$clang CFLAGS='-target aarch64-linux-android21' || cat config.log
+# echo .
+# echo .
+# echo .
+# echo .
+# cat config.h
+# echo .
+# echo .
+# echo .
+# echo .
 
 exit 1
 

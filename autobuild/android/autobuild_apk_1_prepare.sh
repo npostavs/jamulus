@@ -58,18 +58,18 @@ downloadfile="downloadfile"
 wget -q -O downloadfile https://dl.google.com/android/repository/android-ndk-r21d-linux-x86_64.zip
 unzip -q downloadfile
 rm downloadfile
-mv android-ndk-r21d /opt/android/android-ndk
+# mv android-ndk-r21d /opt/android/android-ndk
+android-ndk-r21d/build/tools/make-standalone-toolchain.sh --platform=android-30 --install-dir=/opt/android/android-ndk
 
-
-# Install Android SDK
-yes | "${ANDROID_SDKMANAGER}" --licenses
-#echo yes | $ANDROID_SDKMANAGER --licenses
-"${ANDROID_SDKMANAGER}" --update
-#$ANDROID_SDKMANAGER "platforms;android-17"
-#$ANDROID_SDKMANAGER "platforms;android-28"
-"${ANDROID_SDKMANAGER}" "platforms;android-30"
-#$ANDROID_SDKMANAGER "build-tools;28.0.3"
-"${ANDROID_SDKMANAGER}" "build-tools;30.0.2"
+# # Install Android SDK
+# yes | "${ANDROID_SDKMANAGER}" --licenses
+# #echo yes | $ANDROID_SDKMANAGER --licenses
+# "${ANDROID_SDKMANAGER}" --update
+# #$ANDROID_SDKMANAGER "platforms;android-17"
+# #$ANDROID_SDKMANAGER "platforms;android-28"
+# "${ANDROID_SDKMANAGER}" "platforms;android-30"
+# #$ANDROID_SDKMANAGER "build-tools;28.0.3"
+# "${ANDROID_SDKMANAGER}" "build-tools;30.0.2"
 
 
 
