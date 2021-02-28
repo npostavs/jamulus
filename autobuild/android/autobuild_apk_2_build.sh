@@ -15,6 +15,11 @@ source $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/../ensure_THIS_JAMULUS_PROJ
 
 cd "${THIS_JAMULUS_PROJECT_PATH}"
 
+NDK=/opt/android/android-ndk
+#/prebuilt/linux-x86_64/
+# toolchains/llvm?
+TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/linux-x86_64
+
 cd libs/opus/
 export TARGET=armv7a-linux-androideabi
 export API=21
