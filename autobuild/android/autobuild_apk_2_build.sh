@@ -15,6 +15,31 @@ source $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/../ensure_THIS_JAMULUS_PROJ
 
 cd "${THIS_JAMULUS_PROJECT_PATH}"
 
+cd libs/opus/
+clang=/opt/android/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/clang
+./configure --build=x86_64-linux --host=armv7a-linux-anrdoideabi21 CC=$clang CFLAGS='-target armv7a-linux-androideabi21' || cat config.log
+echo .
+echo .
+echo .
+echo .
+cat config.h
+echo .
+echo .
+echo .
+echo .
+./configure --build=x86_64-linux --host=aarch64-linux-anrdoideabi21 CC=$clang CFLAGS='-target aarch64-linux-android21' || cat config.log
+echo .
+echo .
+echo .
+echo .
+cat config.h
+echo .
+echo .
+echo .
+echo .
+
+exit 1
+
 #$QTDIR/bin/qmake -spec android-clang CONFIG+=$CONFIG
 "${QTDIR}"/bin/qmake -spec android-clang CONFIG+=release
 echo .
