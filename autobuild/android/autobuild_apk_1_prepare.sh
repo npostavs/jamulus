@@ -24,9 +24,9 @@ sudo apt-get clean
 rm -rf /var/lib/apt/lists/*
 
 # Add Android tools and platform tools to PATH
-# export ANDROID_HOME="/opt/android/android-sdk"
-# export ANDROID_SDK_ROOT="/opt/android/android-sdk"
-# export ANDROID_NDK_ROOT="/opt/android/android-ndk"
+export ANDROID_HOME="/opt/android/android-sdk"
+export ANDROID_SDK_ROOT="/opt/android/android-sdk"
+export ANDROID_NDK_ROOT="/opt/android/android-ndk"
 
 export PATH="${PATH}:${ANDROID_HOME}/tools"
 export PATH="${PATH}:${ANDROID_HOME}/platform-tools"
@@ -41,15 +41,15 @@ export ANDROID_SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
 mkdir -p "${ANDROID_SDK_ROOT}"/cmdline-tools/latest/
 mkdir -p "${ANDROID_SDK_ROOT}"/build-tools/latest/
 
-# # Install Android sdk
-# #https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip
-# #https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
-# downloadfile="downloadfile"
-# wget -q -O downloadfile https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip
-# unzip -q downloadfile
-# rm downloadfile
-# mv cmdline-tools/* /opt/android/android-sdk/cmdline-tools/latest/
-# rm -r cmdline-tools
+# Install Android sdk
+#https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip
+#https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
+downloadfile="downloadfile"
+wget -q -O downloadfile https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip
+unzip -q downloadfile
+rm downloadfile
+mv cmdline-tools/* /opt/android/android-sdk/cmdline-tools/latest/
+rm -r cmdline-tools
 
 # Install Android ndk
 #https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip
@@ -58,20 +58,18 @@ downloadfile="downloadfile"
 wget -q -O downloadfile https://dl.google.com/android/repository/android-ndk-r21d-linux-x86_64.zip
 unzip -q downloadfile
 rm downloadfile
-# mv android-ndk-r21d /opt/android/android-ndk
-mkdir -p /opt/android/android-ndk
-android-ndk-r21d/build/tools/make-standalone-toolchain.sh --platform=android-30 --install-dir=/opt/android/android-ndk || exit 1
+mv android-ndk-r21d /opt/android/android-ndk
 
 
-# # Install Android SDK
-# yes | "${ANDROID_SDKMANAGER}" --licenses
-# #echo yes | $ANDROID_SDKMANAGER --licenses
-# "${ANDROID_SDKMANAGER}" --update
-# #$ANDROID_SDKMANAGER "platforms;android-17"
-# #$ANDROID_SDKMANAGER "platforms;android-28"
-# "${ANDROID_SDKMANAGER}" "platforms;android-30"
-# #$ANDROID_SDKMANAGER "build-tools;28.0.3"
-# "${ANDROID_SDKMANAGER}" "build-tools;30.0.2"
+# Install Android SDK
+yes | "${ANDROID_SDKMANAGER}" --licenses
+#echo yes | $ANDROID_SDKMANAGER --licenses
+"${ANDROID_SDKMANAGER}" --update
+#$ANDROID_SDKMANAGER "platforms;android-17"
+#$ANDROID_SDKMANAGER "platforms;android-28"
+"${ANDROID_SDKMANAGER}" "platforms;android-30"
+#$ANDROID_SDKMANAGER "build-tools;28.0.3"
+"${ANDROID_SDKMANAGER}" "build-tools;30.0.2"
 
 
 
@@ -88,7 +86,7 @@ android-ndk-r21d/build/tools/make-standalone-toolchain.sh --platform=android-30 
 
 
 #necessary
-# echo "::set-env name=QTDIR::${QTDIR}"
+echo "::set-env name=QTDIR::${QTDIR}"
 echo "::set-env name=ANDROID_NDK_ROOT::${ANDROID_NDK_ROOT}"
 echo "::set-env name=ANDROID_NDK_HOST::${ANDROID_NDK_HOST}"
 echo "::set-env name=JAVA_HOME::${JAVA_HOME}"
@@ -97,5 +95,5 @@ echo "::set-env name=JAVA_HOME::${JAVA_HOME}"
 echo "::set-env name=ANDROID_HOME::${ANDROID_HOME}"
 echo "::set-env name=ANDROID_SDK_ROOT::${ANDROID_SDK_ROOT}"
 echo "::set-env name=PATH::${PATH}"
-# echo "::set-env name=MY_QT_VERSION::${MY_QT_VERSION}"
+echo "::set-env name=MY_QT_VERSION::${MY_QT_VERSION}"
 echo "::set-env name=ANDROID_SDKMANAGER::${ANDROID_SDKMANAGER}"
