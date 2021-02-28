@@ -41,15 +41,15 @@ export ANDROID_SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
 mkdir -p "${ANDROID_SDK_ROOT}"/cmdline-tools/latest/
 mkdir -p "${ANDROID_SDK_ROOT}"/build-tools/latest/
 
-# Install Android sdk
-#https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip
-#https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
-downloadfile="downloadfile"
-wget -q -O downloadfile https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip
-unzip -q downloadfile
-rm downloadfile
-mv cmdline-tools/* /opt/android/android-sdk/cmdline-tools/latest/
-rm -r cmdline-tools
+# # Install Android sdk
+# #https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip
+# #https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
+# downloadfile="downloadfile"
+# wget -q -O downloadfile https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip
+# unzip -q downloadfile
+# rm downloadfile
+# mv cmdline-tools/* /opt/android/android-sdk/cmdline-tools/latest/
+# rm -r cmdline-tools
 
 # Install Android ndk
 #https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip
@@ -59,7 +59,7 @@ wget -q -O downloadfile https://dl.google.com/android/repository/android-ndk-r21
 unzip -q downloadfile
 rm downloadfile
 # mv android-ndk-r21d /opt/android/android-ndk
-mkdir /opt/android/android-ndk
+mkdir -p /opt/android/android-ndk
 android-ndk-r21d/build/tools/make-standalone-toolchain.sh --platform=android-30 --install-dir=/opt/android/android-ndk || exit 1
 
 
