@@ -24,9 +24,9 @@ sudo apt-get clean
 rm -rf /var/lib/apt/lists/*
 
 # Add Android tools and platform tools to PATH
-export ANDROID_HOME="/opt/android/android-sdk"
-export ANDROID_SDK_ROOT="/opt/android/android-sdk"
-export ANDROID_NDK_ROOT="/opt/android/android-ndk"
+# export ANDROID_HOME="/opt/android/android-sdk"
+# export ANDROID_SDK_ROOT="/opt/android/android-sdk"
+# export ANDROID_NDK_ROOT="/opt/android/android-ndk"
 
 export PATH="${PATH}:${ANDROID_HOME}/tools"
 export PATH="${PATH}:${ANDROID_HOME}/platform-tools"
@@ -61,8 +61,6 @@ rm downloadfile
 # mv android-ndk-r21d /opt/android/android-ndk
 mkdir /opt/android/android-ndk
 android-ndk-r21d/build/tools/make-standalone-toolchain.sh --platform=android-30 --install-dir=/opt/android/android-ndk || exit 1
-
-echo
 
 
 # # Install Android SDK
