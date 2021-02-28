@@ -33,7 +33,7 @@ export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
 export STRIP=$TOOLCHAIN/bin/llvm-strip
 
 echo "STARTING: ./configure --host=$TARGET"
-if ! ./configure --host=$TARGET ; then
+if ! ./configure --host=$TARGET --enabled-fixed-point ; then
     echo "FAILED CONFIGURE $TARGET, config.log:"
     echo .
     echo .
@@ -51,7 +51,7 @@ echo .
 echo .
 echo .
 
-export TARGET=armv7a-linux-androideabi
+export TARGET=aarch64-linux-anrdoideabi
 export API=21
 
 export AR=$TOOLCHAIN/bin/llvm-ar
@@ -78,7 +78,7 @@ else
     cat config.h
 fi
 
-exit 1
+exit 2
 
 #$QTDIR/bin/qmake -spec android-clang CONFIG+=$CONFIG
 "${QTDIR}"/bin/qmake -spec android-clang CONFIG+=release
