@@ -33,7 +33,7 @@ export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
 export STRIP=$TOOLCHAIN/bin/llvm-strip
 
 echo "STARTING: ./configure --host=$TARGET"
-if ! ./configure --host=$TARGET --enabled-fixed-point ; then
+if ! ./configure --host=$TARGET --enable-fixed-point ; then
     echo "FAILED CONFIGURE $TARGET, config.log:"
     echo .
     echo .
