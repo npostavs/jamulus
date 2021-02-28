@@ -59,7 +59,11 @@ wget -q -O downloadfile https://dl.google.com/android/repository/android-ndk-r21
 unzip -q downloadfile
 rm downloadfile
 # mv android-ndk-r21d /opt/android/android-ndk
-android-ndk-r21d/build/tools/make-standalone-toolchain.sh --platform=android-30 --install-dir=/opt/android/android-ndk
+mkdir /opt/android/android-ndk
+android-ndk-r21d/build/tools/make-standalone-toolchain.sh --platform=android-30 --install-dir=/opt/android/android-ndk || exit 1
+
+echo
+
 
 # # Install Android SDK
 # yes | "${ANDROID_SDKMANAGER}" --licenses
@@ -73,20 +77,20 @@ android-ndk-r21d/build/tools/make-standalone-toolchain.sh --platform=android-30 
 
 
 
-# Download / install Qt
-####ADD https://code.qt.io/cgit/qbs/qbs.git/plain/scripts/install-qt.sh ./
-#COPY install-qt.sh /install-qt.sh
-THIS_SCRIPT=$(readlink -f "${0}")
-# Absolute path this script is in, thus /home/user/bin
-THIS_SCRIPT_PATH=$(dirname "${THIS_SCRIPT}")
-bash "${THIS_SCRIPT_PATH}"/install-qt.sh --version "${MY_QT_VERSION}" --target android --toolchain android qtbase qt3d qtdeclarative qtandroidextras qtconnectivity qtgamepad qtlocation qtmultimedia qtquickcontrols2 qtremoteobjects qtscxml qtsensors qtserialport qtsvg qtimageformats qttools qtspeech qtwebchannel qtwebsockets qtwebview qtxmlpatterns qttranslations
+# # Download / install Qt
+# ####ADD https://code.qt.io/cgit/qbs/qbs.git/plain/scripts/install-qt.sh ./
+# #COPY install-qt.sh /install-qt.sh
+# THIS_SCRIPT=$(readlink -f "${0}")
+# # Absolute path this script is in, thus /home/user/bin
+# THIS_SCRIPT_PATH=$(dirname "${THIS_SCRIPT}")
+# bash "${THIS_SCRIPT_PATH}"/install-qt.sh --version "${MY_QT_VERSION}" --target android --toolchain android qtbase qt3d qtdeclarative qtandroidextras qtconnectivity qtgamepad qtlocation qtmultimedia qtquickcontrols2 qtremoteobjects qtscxml qtsensors qtserialport qtsvg qtimageformats qttools qtspeech qtwebchannel qtwebsockets qtwebview qtxmlpatterns qttranslations
 
-# Set the QTDIR environment variable
-export QTDIR="/opt/Qt/${MY_QT_VERSION}/android"
+# # Set the QTDIR environment variable
+# export QTDIR="/opt/Qt/${MY_QT_VERSION}/android"
 
 
 #necessary
-echo "::set-env name=QTDIR::${QTDIR}"
+# echo "::set-env name=QTDIR::${QTDIR}"
 echo "::set-env name=ANDROID_NDK_ROOT::${ANDROID_NDK_ROOT}"
 echo "::set-env name=ANDROID_NDK_HOST::${ANDROID_NDK_HOST}"
 echo "::set-env name=JAVA_HOME::${JAVA_HOME}"
@@ -95,5 +99,5 @@ echo "::set-env name=JAVA_HOME::${JAVA_HOME}"
 echo "::set-env name=ANDROID_HOME::${ANDROID_HOME}"
 echo "::set-env name=ANDROID_SDK_ROOT::${ANDROID_SDK_ROOT}"
 echo "::set-env name=PATH::${PATH}"
-echo "::set-env name=MY_QT_VERSION::${MY_QT_VERSION}"
+# echo "::set-env name=MY_QT_VERSION::${MY_QT_VERSION}"
 echo "::set-env name=ANDROID_SDKMANAGER::${ANDROID_SDKMANAGER}"
