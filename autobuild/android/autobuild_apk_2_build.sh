@@ -17,6 +17,7 @@ cd "${THIS_JAMULUS_PROJECT_PATH}"
 
 #$QTDIR/bin/qmake -spec android-clang CONFIG+=$CONFIG
 "${QTDIR}"/bin/qmake -spec android-clang CONFIG+=release
+exit 2
 echo .
 echo .
 echo .

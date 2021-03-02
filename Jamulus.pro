@@ -670,12 +670,18 @@ SOURCES_OPUS_X86_SSE4 = libs/opus/celt/x86/celt_lpc_sse4_1.c \
      libs/opus/silk/x86/VAD_sse4_1.c \
      libs/opus/silk/x86/VQ_WMat_EC_sse4_1.c
 
+
+message(qt arch = $$QT_ARCH)
+
 contains(QT_ARCH, arm) | contains(QT_ARCH, arm64) {
+    message(using arm/64 arch settings)
     HEADERS_OPUS += $$HEADERS_OPUS_ARM
     SOURCES_OPUS_ARCH += $$SOURCES_OPUS_ARM
     DEFINES_OPUS += OPUS_ARM_PRESUME_NEON=1 OPUS_ARM_PRESUME_NEON_INTR=1
     contains(QT_ARCH, arm64):DEFINES_OPUS += OPUS_ARM_PRESUME_AARCH64_NEON_INTR
 } else:contains(QT_ARCH, x86) | contains(QT_ARCH, x86_64) {
+    message(using x86/64 arch settings)
+
     HEADERS_OPUS += $$HEADERS_OPUS_X86
     SOURCES_OPUS_ARCH += $$SOURCES_OPUS_X86_SSE $$SOURCES_OPUS_X86_SSE2 $$SOURCES_OPUS_X86_SSE4
     DEFINES_OPUS += OPUS_X86_MAY_HAVE_SSE OPUS_X86_MAY_HAVE_SSE2 OPUS_X86_MAY_HAVE_SSE4_1
@@ -684,6 +690,7 @@ contains(QT_ARCH, arm) | contains(QT_ARCH, arm64) {
     DEFINES_OPUS += CPU_INFO_BY_C
 }
 DEFINES_OPUS += OPUS_BUILD=1 USE_ALLOCA=1 OPUS_HAVE_RTCD=1 HAVE_LRINTF=1 HAVE_LRINT=1
+message(defines opus = $$DEFINES_OPUS)
 
 DISTFILES += ChangeLog \
     COPYING \
