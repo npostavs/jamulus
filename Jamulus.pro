@@ -672,13 +672,12 @@ SOURCES_OPUS_X86_SSE4 = libs/opus/celt/x86/celt_lpc_sse4_1.c \
 
 
 message(qt arch = $$QT_ARCH)
-
-contains(QT_ARCH, arm) | contains(QT_ARCH, arm64) {
+contains(QT_ARCH, armeabi-v7a) | contains(QT_ARCH, arm64-v8a) {
     message(using arm/64 arch settings)
     HEADERS_OPUS += $$HEADERS_OPUS_ARM
     SOURCES_OPUS_ARCH += $$SOURCES_OPUS_ARM
     DEFINES_OPUS += OPUS_ARM_PRESUME_NEON=1 OPUS_ARM_PRESUME_NEON_INTR=1
-    contains(QT_ARCH, arm64):DEFINES_OPUS += OPUS_ARM_PRESUME_AARCH64_NEON_INTR
+    contains(QT_ARCH, arm64-v8a):DEFINES_OPUS += OPUS_ARM_PRESUME_AARCH64_NEON_INTR
 } else:contains(QT_ARCH, x86) | contains(QT_ARCH, x86_64) {
     message(using x86/64 arch settings)
 
