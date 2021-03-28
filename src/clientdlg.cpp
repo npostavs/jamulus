@@ -1124,6 +1124,7 @@ void CClientDlg::OnSoundDeviceChanged ( QString strError )
     }
 
     // update the settings dialog
+    ClientSettingsDlg.SetDeviceErrors ( strError );
     ClientSettingsDlg.UpdateSoundDeviceChannelSelectionFrame();
 }
 
