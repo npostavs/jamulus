@@ -227,6 +227,8 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     lblGlobalInfoLabel->setStyleSheet ( ".QLabel { background: red; }" );
     lblGlobalInfoLabel->hide();
 
+    SetErrorMessage ( pNSetP->strLoadErrors );
+
     // prepare update check info label (invisible by default)
     lblUpdateCheck->setText ( "<font color=\"red\"><b>" + QString ( APP_NAME ) + " " + tr ( "software upgrade available" ) + "</b></font>" );
     lblUpdateCheck->hide();
@@ -988,6 +990,12 @@ void CClientDlg::OnLocalMuteStateChanged ( int value )
     }
 }
 
+void CClientDlg::SetErrorMessage ( const QString& message )
+{
+    lblGlobalErrorMessage->setText ( message );
+    lblGlobalErrorMessage->setVisible ( !message.isEmpty() );
+}
+
 void CClientDlg::OnTimerSigMet()
 {
     // show current level
@@ -1122,6 +1130,8 @@ void CClientDlg::OnSoundDeviceChanged ( QString strError )
         TimerDetectFeedback.start ( DETECT_FEEDBACK_TIME_MS );
         bDetectFeedback = true;
     }
+
+    SetErrorMessage ( strError );
 
     // update the settings dialog
     ClientSettingsDlg.SetDeviceErrors ( strError );
