@@ -175,6 +175,7 @@ public:
     // sound card device selection
     QStringList GetSndCrdDevNames() { return Sound.GetDevNames(); }
 
+    QString TryLoadAnyDev();
     QString SetSndCrdDev ( const QString strNewDev );
     QString GetSndCrdDev() { return Sound.GetDev(); }
     void    OpenSndCrdDriverSetup() { Sound.OpenDriverSetup(); }
@@ -276,6 +277,8 @@ public:
 protected:
     // callback function must be static, otherwise it does not work
     static void AudioCallback ( CVector<short>& psData, void* arg );
+
+    QString HandleDeviceChange ( bool bWasRunning, const QString& strError );
 
     void Init();
     void ProcessSndCrdAudioData ( CVector<short>& vecsStereoSndCrd );

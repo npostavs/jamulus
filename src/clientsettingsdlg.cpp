@@ -678,6 +678,7 @@ CClientSettingsDlg::CClientSettingsDlg ( CClient* pNCliP, CClientSettings* pNSet
 
     // buttons
     QObject::connect ( butDriverSetup, &QPushButton::clicked, this, &CClientSettingsDlg::OnDriverSetupClicked );
+    QObject::connect ( butTryLoadAnyDriver, &QPushButton::clicked, this, &CClientSettingsDlg::OnTryLoadAnyDriverClicked );
 
     // misc
     // sliders
@@ -903,6 +904,14 @@ void CClientSettingsDlg::OnNetBufServerValueChanged ( int value )
 {
     pClient->SetServerSockBufNumFrames ( value );
     UpdateJitterBufferFrame();
+}
+
+void CClientSettingsDlg::OnTryLoadAnyDriverClicked()
+{
+    pClient->TryLoadAnyDev();
+
+    UpdateSoundDeviceChannelSelectionFrame();
+    UpdateDisplay();
 }
 
 void CClientSettingsDlg::OnSoundcardActivated ( int iSndDevIdx )
