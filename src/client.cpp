@@ -469,12 +469,12 @@ void CClient::SetAudioChannels ( const EAudChanConf eNAudChanConf )
 
 QString CClient::HandleDeviceChange ( bool bWasRunning, const QString& strError )
 {
-    bLoadedDriverWithoutErrors = strError.isEmpty();
+    strDriverLoadErrors = strError;
     // init again because the sound card actual buffer size might
     // be changed on new device
     Init();
 
-    if ( bWasRunning )
+    if ( strDriverLoadErrors.isEmpty() && bWasRunning )
     {
         // restart client
         Sound.Start();
@@ -624,6 +624,7 @@ void CClient::OnSndCrdReinitRequest ( int iSndCrdResetType )
                 // reinit the driver if requested
                 // (we use the currently selected driver)
                 strError = Sound.SetDev ( Sound.GetDev() );
+                strDriverLoadErrors = strError.isEmpty();
             }
 
             // init client object (must always be performed if the driver
@@ -631,7 +632,7 @@ void CClient::OnSndCrdReinitRequest ( int iSndCrdResetType )
             Init();
         }
 
-        if ( bWasRunning )
+        if ( bWasRunning && strDriverLoadErrors.isEmpty() )
         {
             // restart client
             Sound.Start();
@@ -734,6 +735,13 @@ void CClient::OnClientIDReceived ( int iChanID )
 
 void CClient::Start()
 {
+    if ( !strDriverLoadErrors.isEmpty() )
+    {
+        throw CGenErr (
+            tr ("You can't connect because your current audio device configuration isn't working:\n")
+            + strDriverLoadErrors );
+    }
+
     // init object
     Init();
 
@@ -785,7 +793,7 @@ void CClient::Init()
     const int iFraSizeDefault   = SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_DEFAULT;
     const int iFraSizeSafe      = SYSTEM_FRAME_SIZE_SAMPLES * FRAME_SIZE_FACTOR_SAFE;
 
-    if ( !bLoadedDriverWithoutErrors )
+    if ( !strDriverLoadErrors.isEmpty() )
     {
         bFraSiFactPrefSupported = false;
         bFraSiFactDefSupported  = false;
