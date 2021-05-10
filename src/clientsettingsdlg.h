@@ -106,6 +106,7 @@ public slots:
     void OnAudioQualityActivated ( int iQualityIdx );
     void OnGUIDesignActivated ( int iDesignIdx );
     void OnDriverSetupClicked();
+    void OnDriverResetClicked();
     void OnTryLoadAnyDriverClicked();
     void OnLanguageChanged ( QString strLanguage ) { pSettings->strLanguage = strLanguage; }
     void OnAliasTextChanged ( const QString& strNewName );
