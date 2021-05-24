@@ -244,6 +244,8 @@ CClientSettingsDlg::CClientSettingsDlg ( CClient* pNCliP, CClientSettings* pNSet
     butDriverSetup->setAccessibleName ( tr ( "ASIO Device Settings push button" ) );
     butDriverSetup->setToolTip ( strSndCardDriverSetupTT );
 
+    butDriverReset->setIcon ( butDriverReset->style()->standardIcon ( QStyle::SP_BrowserReload ) );
+
     // fancy skin
     lblSkin->setWhatsThis ( "<b>" + tr ( "Skin" ) + ":</b> " + tr ( "Select the skin to be used for the main window." ) );
 
