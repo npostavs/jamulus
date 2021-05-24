@@ -624,7 +624,7 @@ void CClient::OnSndCrdReinitRequest ( int iSndCrdResetType )
                 // reinit the driver if requested
                 // (we use the currently selected driver)
                 strError = Sound.SetDev ( Sound.GetDev() );
-                strDriverLoadErrors = strError.isEmpty();
+                strDriverLoadErrors = strError;
             }
 
             // init client object (must always be performed if the driver
