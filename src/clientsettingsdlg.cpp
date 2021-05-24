@@ -833,6 +833,10 @@ void CClientSettingsDlg::UpdateSoundDeviceChannelSelectionFrame()
     {
         cbxSoundcard->addItem ( strDevName );
     }
+    // Selecting devices automatically only makes sense if there is more than
+    // one to choose from.
+    butTryLoadAnyDriver->setVisible ( slSndCrdDevNames.count() > 1 );
+
 
     const QString& sSndCrdName = pClient->GetSndCrdDev();
     cbxSoundcard->setCurrentText ( sSndCrdName );
