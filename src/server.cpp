@@ -30,13 +30,11 @@ CHighPrecisionTimer::CHighPrecisionTimer ( const bool bNewUseDoubleSystemFrameSi
 {
     // add some error checking, the high precision timer implementation only
     // supports 64 and 128 samples frame size at 48 kHz sampling rate
-#    if ( SYSTEM_FRAME_SIZE_SAMPLES != 64 ) && ( DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES != 128 )
-#        error "Only system frame size of 64 and 128 samples is supported by this module"
-#    endif
 #    if ( SYSTEM_SAMPLE_RATE_HZ != 48000 )
 #        error "Only a system sample rate of 48 kHz is supported by this module"
 #    endif
 
+#if ( SYSTEM_FRAME_SIZE_SAMPLES == 64 ) && ( DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES == 128 )
     // Since QT only supports a minimum timer resolution of 1 ms but for our
     // server we require a timer interval of 2.333 ms for 128 samples
     // frame size at 48 kHz sampling rate.
@@ -55,6 +53,26 @@ CHighPrecisionTimer::CHighPrecisionTimer ( const bool bNewUseDoubleSystemFrameSi
     veciTimeOutIntervals[0] = 0;
     veciTimeOutIntervals[1] = 1;
     veciTimeOutIntervals[2] = 0;
+#elif ( SYSTEM_FRAME_SIZE_SAMPLES == 60 ) && ( DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES == 120 )
+    // for 120 sample frame size at 48 kHz sampling rate with 2 ms timer resolution:
+    // actual intervals:  0.0  2.5    5.0    7.5  10.0
+    // quantized to 1 ms: 0    2      5      8    10 (0)
+    // for 60 sample frame size at 48 kHz sampling rate with 1 ms timer resolution:
+    // actual intervals:  0.0  1.25   2.5    3.75  5.0
+    // quantized to 1 ms: 0    1      3      4     5
+
+    // Actually, we need different timeout intervals for 60 frames.  But we're
+    // only going to actually use 120 anyway.
+
+    veciTimeOutIntervals.Init ( 4 );
+    veciTimeOutIntervals[0] = 0;
+    veciTimeOutIntervals[1] = 1;
+    veciTimeOutIntervals[2] = 1;
+    veciTimeOutIntervals[3] = 0;
+#else
+# error "Only system frame size of (64 & 128) or (60 & 120) samples are supported by this module"
+#endif
+
 
     Timer.setTimerType ( Qt::PreciseTimer );
 
@@ -256,40 +274,15 @@ CServer::CServer ( const int          iNewMaxNumChan,
     // for each channel
     for ( i = 0; i < iMaxNumChannels; i++ )
     {
-        // init OPUS -----------------------------------------------------------
-        OpusMode[i] = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
-
-        Opus64Mode[i] = opus_custom_mode_create ( SYSTEM_SAMPLE_RATE_HZ, SYSTEM_FRAME_SIZE_SAMPLES, &iOpusError );
-
         // init audio encoders and decoders
-        OpusEncoderMono[i]     = opus_custom_encoder_create ( OpusMode[i], 1, &iOpusError );   // mono encoder legacy
-        OpusDecoderMono[i]     = opus_custom_decoder_create ( OpusMode[i], 1, &iOpusError );   // mono decoder legacy
-        OpusEncoderStereo[i]   = opus_custom_encoder_create ( OpusMode[i], 2, &iOpusError );   // stereo encoder legacy
-        OpusDecoderStereo[i]   = opus_custom_decoder_create ( OpusMode[i], 2, &iOpusError );   // stereo decoder legacy
-        Opus64EncoderMono[i]   = opus_custom_encoder_create ( Opus64Mode[i], 1, &iOpusError ); // mono encoder OPUS64
-        Opus64DecoderMono[i]   = opus_custom_decoder_create ( Opus64Mode[i], 1, &iOpusError ); // mono decoder OPUS64
-        Opus64EncoderStereo[i] = opus_custom_encoder_create ( Opus64Mode[i], 2, &iOpusError ); // stereo encoder OPUS64
-        Opus64DecoderStereo[i] = opus_custom_decoder_create ( Opus64Mode[i], 2, &iOpusError ); // stereo decoder OPUS64
+        OpusEncoderMono[i] = opus_encoder_create ( SYSTEM_SAMPLE_RATE_HZ, 1, OPUS_APPLICATION_RESTRICTED_LOWDELAY, &iOpusError );
+        OpusDecoderMono[i] = opus_decoder_create ( SYSTEM_SAMPLE_RATE_HZ, 1, &iOpusError );
+        OpusEncoderStereo[i] = opus_encoder_create ( SYSTEM_SAMPLE_RATE_HZ, 2, OPUS_APPLICATION_RESTRICTED_LOWDELAY, &iOpusError );
+        OpusDecoderStereo[i] = opus_decoder_create ( SYSTEM_SAMPLE_RATE_HZ, 2, &iOpusError );
 
         // we require a constant bit rate
-        opus_custom_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_VBR ( 0 ) );
-        opus_custom_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_VBR ( 0 ) );
-        opus_custom_encoder_ctl ( Opus64EncoderMono[i], OPUS_SET_VBR ( 0 ) );
-        opus_custom_encoder_ctl ( Opus64EncoderStereo[i], OPUS_SET_VBR ( 0 ) );
-
-        // for 64 samples frame size we have to adjust the PLC behavior to avoid loud artifacts
-        opus_custom_encoder_ctl ( Opus64EncoderMono[i], OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
-        opus_custom_encoder_ctl ( Opus64EncoderStereo[i], OPUS_SET_PACKET_LOSS_PERC ( 35 ) );
-
-        // we want as low delay as possible
-        opus_custom_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-        opus_custom_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-        opus_custom_encoder_ctl ( Opus64EncoderMono[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-        opus_custom_encoder_ctl ( Opus64EncoderStereo[i], OPUS_SET_APPLICATION ( OPUS_APPLICATION_RESTRICTED_LOWDELAY ) );
-
-        // set encoder low complexity for legacy 128 samples frame size
-        opus_custom_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_COMPLEXITY ( 1 ) );
-        opus_custom_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_COMPLEXITY ( 1 ) );
+        opus_encoder_ctl ( OpusEncoderMono[i], OPUS_SET_VBR ( 0 ) );
+        opus_encoder_ctl ( OpusEncoderStereo[i], OPUS_SET_VBR ( 0 ) );
 
         // init double-to-normal frame size conversion buffers -----------------
         // use worst case memory initialization to avoid allocating memory in
@@ -527,18 +520,10 @@ CServer::~CServer()
     for ( int i = 0; i < iMaxNumChannels; i++ )
     {
         // free audio encoders and decoders
-        opus_custom_encoder_destroy ( OpusEncoderMono[i] );
-        opus_custom_decoder_destroy ( OpusDecoderMono[i] );
-        opus_custom_encoder_destroy ( OpusEncoderStereo[i] );
-        opus_custom_decoder_destroy ( OpusDecoderStereo[i] );
-        opus_custom_encoder_destroy ( Opus64EncoderMono[i] );
-        opus_custom_decoder_destroy ( Opus64DecoderMono[i] );
-        opus_custom_encoder_destroy ( Opus64EncoderStereo[i] );
-        opus_custom_decoder_destroy ( Opus64DecoderStereo[i] );
-
-        // free audio modes
-        opus_custom_mode_destroy ( OpusMode[i] );
-        opus_custom_mode_destroy ( Opus64Mode[i] );
+        opus_encoder_destroy ( OpusEncoderMono[i] );
+        opus_decoder_destroy ( OpusDecoderMono[i] );
+        opus_encoder_destroy ( OpusEncoderStereo[i] );
+        opus_decoder_destroy ( OpusDecoderStereo[i] );
     }
 }
 
@@ -933,7 +918,7 @@ void CServer::DecodeReceiveData ( const int iChanCnt, const int iNumClients )
 {
     int                iUnused;
     int                iClientFrameSizeSamples = 0; // initialize to avoid a compiler warning
-    OpusCustomDecoder* CurOpusDecoder;
+    OpusDecoder*       CurOpusDecoder;
     unsigned char*     pCurCodedData;
 
     // get actual ID of current channel
@@ -1063,11 +1048,17 @@ void CServer::DecodeReceiveData ( const int iChanCnt, const int iNumClients )
             // OPUS decode received data stream
             if ( CurOpusDecoder != nullptr )
             {
-                iUnused = opus_custom_decode ( CurOpusDecoder,
-                                               pCurCodedData,
-                                               iCeltNumCodedBytes,
-                                               &vecvecsData[iChanCnt][iB * SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt]],
-                                               iClientFrameSizeSamples );
+                int ret =
+                    opus_decode ( CurOpusDecoder,
+                                  pCurCodedData,
+                                  iCeltNumCodedBytes,
+                                  &vecvecsData[iChanCnt][iB * SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt]],
+                                  iClientFrameSizeSamples,
+                                  1 );
+                if ( ret < 0 )
+                {
+                    qWarning() << opus_strerror ( ret ) << "\n";
+                }
             }
         }
 
@@ -1280,7 +1271,7 @@ void CServer::MixEncodeTransmitData ( const int iChanCnt, const int iNumClients 
     }
 
     int                iClientFrameSizeSamples = 0; // initialize to avoid a compiler warning
-    OpusCustomEncoder* pCurOpusEncoder         = nullptr;
+    OpusEncoder* pCurOpusEncoder               = nullptr;
 
     // get current number of CELT coded bytes
     const int iCeltNumCodedBytes = vecChannels[iCurChanID].GetCeltNumCodedBytes();
@@ -1333,16 +1324,16 @@ void CServer::MixEncodeTransmitData ( const int iChanCnt, const int iNumClients 
             // clang-format off
 // TODO find a better place than this: the setting does not change all the time so for speed
 //      optimization it would be better to set it only if the network frame size is changed
-opus_custom_encoder_ctl ( pCurOpusEncoder, OPUS_SET_BITRATE ( CalcBitRateBitsPerSecFromCodedBytes ( iCeltNumCodedBytes, iClientFrameSizeSamples ) ) );
+opus_encoder_ctl ( pCurOpusEncoder, OPUS_SET_BITRATE ( CalcBitRateBitsPerSecFromCodedBytes ( iCeltNumCodedBytes, iClientFrameSizeSamples ) ) );
             // clang-format on
 
             for ( size_t iB = 0; iB < (size_t) vecNumFrameSizeConvBlocks[iChanCnt]; iB++ )
             {
-                iUnused = opus_custom_encode ( pCurOpusEncoder,
-                                               &vecsSendData[iB * SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt]],
-                                               iClientFrameSizeSamples,
-                                               &vecvecbyCodedData[iChanCnt][0],
-                                               iCeltNumCodedBytes );
+                iUnused = opus_encode ( pCurOpusEncoder,
+                                        &vecsSendData[iB * SYSTEM_FRAME_SIZE_SAMPLES * vecNumAudioChannels[iChanCnt]],
+                                        iClientFrameSizeSamples,
+                                        &vecvecbyCodedData[iChanCnt][0],
+                                        iCeltNumCodedBytes );
 
                 // send separate mix to current clients
                 vecChannels[iCurChanID].PrepAndSendPacket ( &Socket, vecvecbyCodedData[iChanCnt], iCeltNumCodedBytes );

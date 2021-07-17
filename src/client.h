@@ -30,9 +30,9 @@
 #include <QDateTime>
 #include <QMutex>
 #ifdef USE_OPUS_SHARED_LIB
-#    include "opus/opus_custom.h"
+#    include "opus/opus.h"
 #else
-#    include "opus_custom.h"
+#    include "opus.h"
 #endif
 #include "global.h"
 #include "socket.h"
@@ -290,28 +290,26 @@ protected:
     CProtocol ConnLessProtocol;
 
     // audio encoder/decoder
-    OpusCustomMode*        Opus64Mode;
-    OpusCustomEncoder*     Opus64EncoderMono;
-    OpusCustomDecoder*     Opus64DecoderMono;
-    OpusCustomEncoder*     Opus64EncoderStereo;
-    OpusCustomDecoder*     Opus64DecoderStereo;
-    OpusCustomMode*        OpusMode;
-    OpusCustomEncoder*     OpusEncoderMono;
-    OpusCustomDecoder*     OpusDecoderMono;
-    OpusCustomEncoder*     OpusEncoderStereo;
-    OpusCustomDecoder*     OpusDecoderStereo;
-    OpusCustomEncoder*     CurOpusEncoder;
-    OpusCustomDecoder*     CurOpusDecoder;
-    EAudComprType          eAudioCompressionType;
-    int                    iCeltNumCodedBytes;
-    int                    iOPUSFrameSizeSamples;
-    EAudioQuality          eAudioQuality;
-    EAudChanConf           eAudioChannelConf;
-    int                    iNumAudioChannels;
-    bool                   bIsInitializationPhase;
-    bool                   bMuteOutStream;
-    float                  fMuteOutStreamGain;
-    CVector<unsigned char> vecCeltData;
+    OpusEncoder*      Opus64EncoderMono;
+    OpusDecoder*      Opus64DecoderMono;
+    OpusEncoder*      Opus64EncoderStereo;
+    OpusDecoder*      Opus64DecoderStereo;
+    OpusEncoder*      OpusEncoderMono;
+    OpusDecoder*      OpusDecoderMono;
+    OpusEncoder*      OpusEncoderStereo;
+    OpusDecoder*      OpusDecoderStereo;
+    OpusEncoder*      CurOpusEncoder;
+    OpusDecoder*      CurOpusDecoder;
+    EAudComprType           eAudioCompressionType;
+    int                     iCeltNumCodedBytes;
+    int                     iOPUSFrameSizeSamples;
+    EAudioQuality           eAudioQuality;
+    EAudChanConf            eAudioChannelConf;
+    int                     iNumAudioChannels;
+    bool                    bIsInitializationPhase;
+    bool                    bMuteOutStream;
+    float                   fMuteOutStreamGain;
+    CVector<unsigned char>  vecCeltData;
 
     CHighPrioSocket         Socket;
     CSound                  Sound;

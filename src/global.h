@@ -89,7 +89,7 @@ LED bar:      lbr
 // System block size, this is the block size on which the audio coder works.
 // All other block sizes must be a multiple of this size.
 // Note that the UpdateAutoSetting() function assumes a value of 128.
-#define SYSTEM_FRAME_SIZE_SAMPLES        64
+#define SYSTEM_FRAME_SIZE_SAMPLES        60
 #define DOUBLE_SYSTEM_FRAME_SIZE_SAMPLES ( 2 * SYSTEM_FRAME_SIZE_SAMPLES )
 
 // additional buffer for delay panning
