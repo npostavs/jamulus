@@ -63,6 +63,8 @@ INCLUDEPATH_OPUS = libs/opus/include \
 INCLUDEPATH_PORTAUDIO = libs/portaudio/include libs/portaudio/src/common
 win32 {
     INCLUDEPATH_PORTAUDIO += libs/portaudio/src/os/win
+} else {
+    INCLUDEPATH_PORTAUDIO += libs/portaudio/src/os/unix
 }
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\" \
@@ -763,12 +765,15 @@ win32 {
     }
 } else:unix {
     SOURCES_PORTAUDIO += $$files(libs/portaudio/src/os/unix/*.c)
-    SOURCES_PORTAUDIO += $$files(libs/portaudio/src/os/hostapi/alsa/*.c) \
-        $$files(libs/portaudio/src/os/hostapi/jack/*.c) \
-        $$files(libs/portaudio/src/os/hostapi/oss/*.c)
+    # Does it ever make sense to use OSS?
+    # $$files(libs/portaudio/src/hostapi/oss/*.c)
+    SOURCES_PORTAUDIO += $$files(libs/portaudio/src/hostapi/alsa/*.c)
+    CONFIG(portaudio_jack) {
+        SOURCES_PORTAUDIO += $$files(libs/portaudio/src/hostapi/jack/*.c)
+    }
 } else:macx {
     SOURCES_PORTAUDIO += $$files(libs/portaudio/src/os/unix/*.c)
-    SOURCES_PORTAUDIO += $$files(libs/portaudio/src/os/hostapi/coreaudio/*.c)
+    SOURCES_PORTAUDIO += $$files(libs/portaudio/src/hostapi/coreaudio/*.c)
 }
 
 # I can't figure out how to make the custom compiler stuff work for
@@ -1231,8 +1236,12 @@ CONFIG(portaudio) {
     SOURCES += src/portaudiosound.cpp
     CONFIG(portaudio_shared_lib) {
         LIBS += $$libnames(portaudio)
-    } else:win32 {
-        DEFINES += PA_USE_ASIO=1 PA_USE_WASAPI=1 PA_USE_WDMKS=1
+    } else {
+        win32 {
+            DEFINES += PA_USE_ASIO=1 PA_USE_WASAPI=1 PA_USE_WDMKS=1
+        } else {
+            DEFINES += PA_USE_ALSA=1
+        }
         INCLUDEPATH += $$INCLUDEPATH_PORTAUDIO
         HEADERS += $$HEADERS_PORTAUDIO
         mingw {
@@ -1243,9 +1252,11 @@ CONFIG(portaudio) {
             SOURCES += $$SOURCES_PORTAUDIO $$SOURCES_CXX_PORTAUDIO
         }
         DISTFILES += $$DISTFILES_PORTAUDIO
-        LIBS += $$libnames(winmm ole32 uuid setupapi)
-    } else {
-        error ( "non-shared portaudio only implemented for win32" )
+        win32 {
+              LIBS += $$libnames(winmm ole32 uuid setupapi)
+        } else {
+              LIBS += -lasound
+        }
     }
 }
 
