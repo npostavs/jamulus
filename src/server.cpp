@@ -538,11 +538,10 @@ void CServer::OnHandledSignal ( int sigNum )
     switch ( sigNum )
     {
     case SIGUSR1: {
-        bool enable = !GetServerListEnabled();
-        SetServerListEnabled ( enable );
-        if (!enable)
-            UnregisterSlaveServer();
-        UpdateServerList();
+        static EDirectoryType prevDirType = AT_NONE;
+        EDirectoryType curDirType = GetDirectoryType();
+        SetDirectoryType ( prevDirType );
+        prevDirType = curDirType;
         break;
     }
 
